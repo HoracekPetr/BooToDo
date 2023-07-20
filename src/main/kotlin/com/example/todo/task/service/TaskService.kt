@@ -4,16 +4,21 @@ import com.example.todo.task.model.TaskEntity
 import com.example.todo.task.model.request.TaskRequest
 import com.example.todo.task.repository.TaskRepository
 import com.example.todo.core.error.GeneralAppException
+import com.example.todo.task.model.MockTaskDto
 import com.example.todo.task.model.TaskDto
 import com.example.todo.task.model.toDto
 import com.example.todo.task.util.validator.*
 import kotlinx.coroutines.flow.toList
 import org.springframework.beans.BeanWrapperImpl
 import org.springframework.stereotype.Service
+import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.reactive.function.client.awaitBodyOrNull
+import org.springframework.web.reactive.function.client.bodyToFlow
 
 @Service
 class TaskService(
-        private val repository: TaskRepository
+        private val repository: TaskRepository,
+        private val webClient: WebClient
 ) {
 
     suspend fun getAllTasks(): List<TaskDto> {
@@ -94,5 +99,14 @@ class TaskService(
                 throw GeneralAppException(message = validationResult.message)
             }
         }
+    }
+
+    suspend fun getTasksFromMockApi(userId: String): List<MockTaskDto> {
+        val url = "https://jsonplaceholder.typicode.com/todos" + if(userId.isNotEmpty()) { "?userId=$userId" } else ""
+        return webClient.get()
+                .uri(url)
+                .retrieve()
+                .bodyToFlow<MockTaskDto>()
+                .toList()
     }
 }

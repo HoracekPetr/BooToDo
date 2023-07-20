@@ -2,6 +2,7 @@ package com.example.todo.task.controller
 
 import com.example.todo.core.error.GeneralErrorMessages.ERROR_UNEXPECTED
 import com.example.todo.core.response.GeneralApiResponse
+import com.example.todo.task.model.MockTaskDto
 import com.example.todo.task.model.TaskDto
 import com.example.todo.task.model.request.TaskRequest
 import com.example.todo.task.service.TaskService
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
@@ -61,4 +63,11 @@ class TaskController(
             false -> ResponseEntity(GeneralApiResponse(message = ERROR_UNEXPECTED), HttpStatus.BAD_REQUEST)
         }
     }
+
+    @GetMapping("/mocks")
+    suspend fun getMockTasks(
+            @RequestParam(required = false, defaultValue = "") userId: String
+    ): ResponseEntity<GeneralApiResponse<List<MockTaskDto>?>> = ResponseEntity(
+            GeneralApiResponse(data = service.getTasksFromMockApi(userId)), HttpStatus.OK
+    )
 }
