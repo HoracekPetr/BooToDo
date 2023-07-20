@@ -1,0 +1,7 @@
+CREATE TABLE IF NOT EXISTS task(
+id SERIAL PRIMARY KEY,
+title VARCHAR(255) NOT NULL,
+description VARCHAR(255) NOT NULL,
+isOpen BOOLEAN,
+priority priority NOT NULL
+);
